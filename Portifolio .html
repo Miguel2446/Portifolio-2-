@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Miguel | Deividi Miguel da Costa - Cyberpunk HUD Portfolio</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Orbitron, Inter, Fira Code -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@600;700;800;900&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            bg: '#050a14',
+                            dark: '#080f20',
+                            card: '#0b162c',
+                            border: '#11294d',
+                            neon: '#00f3ff',
+                            blue: '#0066ff',
+                            purple: '#8b5cf6',
+                            glow: 'rgba(0, 243, 255, 0.25)'
+                        }
+                    },
+                    fontFamily: {
+                        orbitron: ['Orbitron', 'sans-serif'],
+                        inter: ['Inter', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #050a14;
+            color: #e2e8f0;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* HUD Background Grid & Visual Effects */
+        .hud-grid {
+            background-size: 32px 32px;
+            background-image: 
+                linear-gradient(to right, rgba(0, 102, 255, 0.07) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0, 102, 255, 0.07) 1px, transparent 1px);
+        }
+
+        .hud-card {
+            background: rgba(11, 22, 44, 0.85);
+            backdrop-filter: blur(14px);
+            border: 1px solid #11294d;
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .hud-card:hover, .hud-card:active {
+            border-color: #00f3ff;
+            box-shadow: 0 0 25px rgba(0, 243, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .glow-text {
+            text-shadow: 0 0 15px rgba(0, 243, 255, 0.8);
+        }
+
+        .glow-avatar {
+            box-shadow: 0 0 35px rgba(0, 243, 255, 0.5), inset 0 0 15px rgba(0, 102, 255, 0.6);
+        }
+
+        /* Custom Scrollbar for Carousel */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Scanline animation */
+        .scanline {
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(0, 243, 255, 0.8), transparent);
+            animation: scan 4s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(1000%); }
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-16 hud-grid selection:bg-cyber-neon selection:text-black">
+
+    <!-- HUD Ambient Glow Lights -->
+    <div class="fixed top-0 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-cyber-blue/15 rounded-full blur-[140px] pointer-events-none z-0"></div>
+    <div class="fixed top-1/3 right-0 w-[400px] h-[400px] bg-cyber-neon/10 rounded-full blur-[120px] pointer-events-none z-0"></div>
+    <div class="fixed bottom-0 left-0 w-[400px] h-[400px] bg-cyber-purple/10 rounded-full blur-[120px] pointer-events-none z-0"></div>
+
+    <div class="relative z-10 max-w-xl mx-auto px-4 pt-6 sm:pt-10 space-y-8">
+
+        <!-- HEADER / PROFILE SECTION -->
+        <header class="text-center space-y-6">
+            
+            <!-- HUD Avatar Frame -->
+            <div class="relative w-36 h-36 mx-auto group">
+                <div class="absolute -inset-1 rounded-full bg-gradient-to-r from-cyber-blue via-cyber-neon to-cyber-purple animate-pulse blur-md opacity-80"></div>
+                <div class="relative w-36 h-36 rounded-full p-1 bg-cyber-dark glow-avatar overflow-hidden border-2 border-cyber-neon flex items-center justify-center">
+                    
+                    <!-- SVG Vector Avatar displaying Beige Cap + Dark Jacket representation -->
+                    <div id="vectorAvatar" class="w-full h-full flex items-center justify-center">
+                        <svg class="w-full h-full" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="50" cy="50" r="50" fill="#080f20"/>
+                            <!-- Jacket background -->
+                            <path d="M15 85 C15 65 30 58 50 58 C70 58 85 65 85 85 L85 100 L15 100 Z" fill="#111827"/>
+                            <path d="M38 58 L50 78 L62 58" stroke="#00f3ff" stroke-width="1.5" stroke-linecap="round"/>
+                            <!-- Face / Neck -->
+                            <path d="M42 45 C42 52 58 52 58 45 L58 58 L42 58 Z" fill="#d09e72"/>
+                            <circle cx="50" cy="36" r="16" fill="#e5b88f"/>
+                            <!-- Smile & Beard -->
+                            <path d="M44 40 Q50 45 56 40" stroke="#4a2e18" stroke-width="1.2" fill="none"/>
+                            <path d="M46 44 C48 46 52 46 54 44 C53 47 47 47 46 44" fill="#3a2312"/>
+                            <!-- Cap (Boné Beige) -->
+                            <path d="M30 30 C30 18 70 18 70 30 Z" fill="#d4c39c"/>
+                            <path d="M30 30 C30 32 70 32 70 30 Z" fill="#b8a57e"/>
+                            <!-- Cap Visor -->
+                            <path d="M38 30 C50 28 68 28 82 34 C72 38 52 38 38 30 Z" fill="#c4b28b"/>
+                            <!-- Cap Emblem -->
+                            <rect x="44" y="21" width="12" height="7" rx="1.5" fill="#1f2937" stroke="#00f3ff" stroke-width="0.5"/>
+                            <text x="50" y="26" font-size="3" fill="#ffffff" font-family="monospace" text-anchor="middle" font-weight="bold">MIGUEL</text>
+                        </svg>
+                    </div>
+
+                    <!-- Custom Loaded Photo Layer -->
+                    <img id="userPhoto" class="hidden absolute inset-0 w-full h-full object-cover rounded-full" alt="Miguel Profile Photo">
+                </div>
+
+                <!-- Touch / Click Photo Upload Overlay -->
+                <label for="photoUpload" class="absolute bottom-0 right-0 bg-cyber-dark border border-cyber-neon hover:bg-cyber-neon hover:text-black text-cyber-neon p-2 rounded-full cursor-pointer shadow-lg transition-all" title="Alterar Foto">
+                    <i data-lucide="camera" class="w-4 h-4"></i>
+                    <input type="file" id="photoUpload" accept="image/*" class="hidden" onchange="previewUserPhoto(event)">
+                </label>
+
+                <!-- Online Status HUD Badge -->
+                <div class="absolute top-1 left-1 bg-cyber-dark border border-cyber-neon px-2 py-0.5 rounded-full flex items-center gap-1 shadow-lg pointer-events-none">
+                    <span class="w-2 h-2 rounded-full bg-cyber-neon animate-ping"></span>
+                    <span class="text-[9px] font-mono text-cyber-neon font-bold">ONLINE</span>
+                </div>
+            </div>
+
+            <!-- Identity Header -->
+            <div class="space-y-2">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyber-blue/20 border border-cyber-neon/40 text-[10px] font-mono font-semibold text-cyber-neon">
+                    <i data-lucide="terminal" class="w-3 h-3"></i> DEIVIDI MIGUEL DA COSTA
+                </div>
+                <h1 class="text-4xl sm:text-5xl font-black tracking-wider font-orbitron text-white glow-text">
+                    MIGUEL
+                </h1>
+                <p class="text-xs sm:text-sm text-cyber-neon font-bold tracking-widest uppercase px-2">
+                    Desenvolvedor Full Stack & Especialista em TI | Founder @ Blue Enterprise
+                </p>
+            </div>
+
+            <!-- TOP / HERO FIRST PRIORITY CARDS: LINKEDIN & BLUE ENTERPRISE -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                <!-- LinkedIn Card -->
+                <a href="https://www.linkedin.com/in/miguel-costa-50671319b" target="_blank" rel="noopener noreferrer"
+                   class="hud-card p-4 rounded-xl flex items-center justify-between group border-l-4 border-l-cyber-blue">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2.5 rounded-lg bg-cyber-blue/20 border border-cyber-blue/40 text-cyber-neon">
+                            <i data-lucide="linkedin" class="w-6 h-6"></i>
+                        </div>
+                        <div class="text-left">
+                            <span class="text-[9px] font-mono font-bold text-cyber-blue uppercase tracking-wider">REDE PROFISSIONAL</span>
+                            <h3 class="text-sm font-bold text-white font-orbitron group-hover:text-cyber-neon transition-colors">LinkedIn</h3>
+                        </div>
+                    </div>
+                    <i data-lucide="external-link" class="w-4 h-4 text-cyber-neon group-hover:translate-x-1 transition-transform"></i>
+                </a>
+
+                <!-- Blue Enterprise Page Card -->
+                <a href="https://pagea.uk/blueenterprise" target="_blank" rel="noopener noreferrer"
+                   class="hud-card p-4 rounded-xl flex items-center justify-between group border-l-4 border-l-cyber-neon">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2.5 rounded-lg bg-cyber-neon/20 border border-cyber-neon/40 text-cyber-neon">
+                            <i data-lucide="globe" class="w-6 h-6"></i>
+                        </div>
+                        <div class="text-left">
+                            <span class="text-[9px] font-mono font-bold text-cyber-neon uppercase tracking-wider">PORTAL OFICIAL</span>
+                            <h3 class="text-sm font-bold text-white font-orbitron group-hover:text-cyber-neon transition-colors">Blue Enterprise</h3>
+                        </div>
+                    </div>
+                    <i data-lucide="external-link" class="w-4 h-4 text-cyber-neon group-hover:translate-x-1 transition-transform"></i>
+                </a>
+            </div>
+
+            <!-- Quick Action Touch Ribbon -->
+            <div class="grid grid-cols-4 gap-2 pt-1">
+                <a href="https://wa.me/" target="_blank" class="hud-card p-2.5 rounded-xl flex flex-col items-center gap-1 hover:text-emerald-400">
+                    <i data-lucide="message-square" class="w-4 h-4 text-emerald-400"></i>
+                    <span class="text-[10px] font-bold">WhatsApp</span>
+                </a>
+                <a href="mailto:contato@blueenterprise.com" class="hud-card p-2.5 rounded-xl flex flex-col items-center gap-1 hover:text-cyber-neon">
+                    <i data-lucide="mail" class="w-4 h-4 text-cyber-neon"></i>
+                    <span class="text-[10px] font-bold">E-mail</span>
+                </a>
+                <button onclick="copyBioLink()" class="hud-card p-2.5 rounded-xl flex flex-col items-center gap-1 hover:text-cyber-purple">
+                    <i data-lucide="share-2" class="w-4 h-4 text-cyber-purple"></i>
+                    <span class="text-[10px] font-bold">Partilhar</span>
+                </button>
+                <a href="#about" class="hud-card p-2.5 rounded-xl flex flex-col items-center gap-1 hover:text-amber-400">
+                    <i data-lucide="user" class="w-4 h-4 text-amber-400"></i>
+                    <span class="text-[10px] font-bold">Sobre</span>
+                </a>
+            </div>
+        </header>
+
+        <!-- SECTION 1: CARROSSEL DE ESPECIALIDADES EM TI -->
+        <section class="space-y-3">
+            <div class="flex items-center justify-between px-1">
+                <h2 class="text-xs font-extrabold text-white font-orbitron flex items-center gap-2 tracking-wider">
+                    <i data-lucide="cpu" class="w-4 h-4 text-cyber-neon"></i> ESPECIALIDADES & TECH STACK
+                </h2>
+                <span class="text-[10px] font-mono text-cyber-neon flex items-center gap-1">
+                    Arraste <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                </span>
+            </div>
+
+            <!-- Carousel Slider Container -->
+            <div class="flex gap-4 overflow-x-auto no-scrollbar py-2 px-1 snap-x snap-mandatory">
+                
+                <!-- Skill 1: Web Development -->
+                <div class="hud-card min-w-[270px] p-5 rounded-2xl snap-center flex flex-col justify-between space-y-4 border-t-2 border-t-cyber-neon">
+                    <div class="space-y-2">
+                        <div class="w-10 h-10 rounded-xl bg-cyber-neon/10 border border-cyber-neon/30 flex items-center justify-center text-cyber-neon">
+                            <i data-lucide="code-2" class="w-5 h-5"></i>
+                        </div>
+                        <h3 class="text-sm font-bold text-white font-orbitron">Desenvolvimento Web Full Stack</h3>
+                        <p class="text-xs text-slate-300 leading-relaxed">Aplicações modernas, React, Node.js, HTML5/CSS3, Tailwind CSS, REST APIs e arquitetura limpa.</p>
+                    </div>
+                    <button onclick="openModal('Desenvolvimento Full Stack', 'Criação de sistemas web escaláveis, front-ends responsivos, dashboards interativos e back-ends otimizados com boas práticas de segurança e alta performance.')" 
+                            class="w-full py-2 rounded-lg bg-cyber-neon/10 border border-cyber-neon/40 text-cyber-neon hover:bg-cyber-neon hover:text-black text-xs font-bold transition-all flex items-center justify-between px-3">
+                        <span>Saiba mais</span>
+                        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    </button>
+                </div>
+
+                <!-- Skill 2: Data & Analytics -->
+                <div class="hud-card min-w-[270px] p-5 rounded-2xl snap-center flex flex-col justify-between space-y-4 border-t-2 border-t-cyber-blue">
+                    <div class="space-y-2">
+                        <div class="w-10 h-10 rounded-xl bg-cyber-blue/10 border border-cyber-blue/30 flex items-center justify-center text-cyber-blue">
+                            <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+                        </div>
+                        <h3 class="text-sm font-bold text-white font-orbitron">Data & Power BI Analytics</h3>
+                        <p class="text-xs text-slate-300 leading-relaxed">Pipelines de dados, modelagem DAX, relatórios estratégicos corporativos e SQL avançado.</p>
+                    </div>
+                    <button onclick="openModal('Data & Analytics', 'Engenharia e análise de dados para tomada de decisão. Modelagem dimensional, automação de carga ETL, métricas KPI e relatórios no Power BI.')" 
+                            class="w-full py-2 rounded-lg bg-cyber-blue/10 border border-cyber-blue/40 text-cyber-blue hover:bg-cyber-blue hover:text-white text-xs font-bold transition-all flex items-center justify-between px-3">
+                        <span>Saiba mais</span>
+                        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    </button>
+                </div>
+
+                <!-- Skill 3: Cloud Infrastructure -->
+                <div class="hud-card min-w-[270px] p-5 rounded-2xl snap-center flex flex-col justify-between space-y-4 border-t-2 border-t-purple-500">
+                    <div class="space-y-2">
+                        <div class="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400">
+                            <i data-lucide="cloud" class="w-5 h-5"></i>
+                        </div>
+                        <h3 class="text-sm font-bold text-white font-orbitron">Nuvem & AWS Cloud</h3>
+                        <p class="text-xs text-slate-300 leading-relaxed">Gerenciamento de servidores, EC2, S3, Serverless, hospedagem e segurança em infraestrutura cloud.</p>
+                    </div>
+                    <button onclick="openModal('Infraestrutura Cloud', 'Implantação e gerenciamento de aplicações em ambientes de nuvem (AWS e VPS). Otimização de custos, segurança de rede e disponibilidade contínua.')" 
+                            class="w-full py-2 rounded-lg bg-purple-500/10 border border-purple-500/40 text-purple-300 hover:bg-purple-500 hover:text-white text-xs font-bold transition-all flex items-center justify-between px-3">
+                        <span>Saiba mais</span>
+                        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    </button>
+                </div>
+
+                <!-- Skill 4: AI & Automation -->
+                <div class="hud-card min-w-[270px] p-5 rounded-2xl snap-center flex flex-col justify-between space-y-4 border-t-2 border-t-emerald-400">
+                    <div class="space-y-2">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-400/10 border border-emerald-400/30 flex items-center justify-center text-emerald-400">
+                            <i data-lucide="bot" class="w-5 h-5"></i>
+                        </div>
+                        <h3 class="text-sm font-bold text-white font-orbitron">IA & Automação de Processos</h3>
+                        <p class="text-xs text-slate-300 leading-relaxed">Integração de LLMs, automação de fluxos com Python, web scraping e agentes inteligentes.</p>
+                    </div>
+                    <button onclick="openModal('Inteligência Artificial & Automação', 'Implementação de soluções inteligentes para otimização de rotinas operacionais, conexão de APIs e agentes virtuais corporativos.')" 
+                            class="w-full py-2 rounded-lg bg-emerald-400/10 border border-emerald-400/40 text-emerald-300 hover:bg-emerald-400 hover:text-black text-xs font-bold transition-all flex items-center justify-between px-3">
+                        <span>Saiba mais</span>
+                        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    </button>
+                </div>
+
+                <!-- Skill 5: Cyber Security -->
+                <div class="hud-card min-w-[270px] p-5 rounded-2xl snap-center flex flex-col justify-between space-y-4 border-t-2 border-t-red-500">
+                    <div class="space-y-2">
+                        <div class="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-400">
+                            <i data-lucide="shield-alert" class="w-5 h-5"></i>
+                        </div>
+                        <h3 class="text-sm font-bold text-white font-orbitron">Cyber Security & Proteção</h3>
+                        <p class="text-xs text-slate-300 leading-relaxed">Auditoria de vulnerabilidades, harding de servidores, protocolos SSL/TLS e segurança da informação.</p>
+                    </div>
+                    <button onclick="openModal('Cyber Security', 'Proteção de ativos digitais, configuração de firewalls, encriptação de dados e práticas avançadas para mitigação de riscos e ameaças cibernéticas.')" 
+                            class="w-full py-2 rounded-lg bg-red-500/10 border border-red-500/40 text-red-300 hover:bg-red-500 hover:text-white text-xs font-bold transition-all flex items-center justify-between px-3">
+                        <span>Saiba mais</span>
+                        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    </button>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SECTION 2: SERVIÇOS & SOLUÇÕES (EXPANDABLE CARDS) -->
+        <section class="space-y-3">
+            <h2 class="text-xs font-extrabold text-white font-orbitron flex items-center gap-2 tracking-wider px-1">
+                <i data-lucide="layers" class="w-4 h-4 text-cyber-neon"></i> SERVIÇOS & SOLUÇÕES
+            </h2>
+
+            <div class="space-y-3">
+                <!-- Expandable Card 1 -->
+                <div class="hud-card rounded-2xl p-4 cursor-pointer" onclick="toggleCard('service1')">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2.5 rounded-xl bg-cyber-neon/10 text-cyber-neon">
+                                <i data-lucide="terminal" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xs font-bold text-white font-orbitron">Desenvolvimento de Software Sob Medida</h3>
+                                <p class="text-[11px] text-slate-400">Sistemas, plataformas e portfólios web</p>
+                            </div>
+                        </div>
+                        <i id="icon-service1" data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transition-transform duration-300"></i>
+                    </div>
+                    <div id="service1" class="hidden pt-3 mt-3 border-t border-cyber-border text-xs text-slate-300 leading-relaxed space-y-2">
+                        <p>Criação de soluções digitais completas do zero até o deploy final em nuvem:</p>
+                        <ul class="list-disc list-inside text-slate-400 space-y-1 pl-1">
+                            <li>Portfólios e Landing Pages responsivas em padrão Cyberpunk / Moderno</li>
+                            <li>Sistemas de gestão interna e Web Apps interativos</li>
+                            <li>Integração total de bancos de dados relacionais e Não-Relacionais</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Expandable Card 2 -->
+                <div class="hud-card rounded-2xl p-4 cursor-pointer" onclick="toggleCard('service2')">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2.5 rounded-xl bg-cyber-blue/10 text-cyber-blue">
+                                <i data-lucide="line-chart" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xs font-bold text-white font-orbitron">Dashboards & Power BI Inteligente</h3>
+                                <p class="text-[11px] text-slate-400">Business Intelligence & Análise Executiva</p>
+                            </div>
+                        </div>
+                        <i id="icon-service2" data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transition-transform duration-300"></i>
+                    </div>
+                    <div id="service2" class="hidden pt-3 mt-3 border-t border-cyber-border text-xs text-slate-300 leading-relaxed space-y-2">
+                        <p>Transformação de dados brutos em inteligência estratégica para tomada de decisões:</p>
+                        <ul class="list-disc list-inside text-slate-400 space-y-1 pl-1">
+                            <li>Desenvolvimento de relatórios interativos com filtros em tempo real</li>
+                            <li>Automação de extração e tratamento de dados com SQL / Python</li>
+                            <li>Configuração de alertas e indicadores chave de desempenho (KPIs)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Expandable Card 3 -->
+                <div class="hud-card rounded-2xl p-4 cursor-pointer" onclick="toggleCard('service3')">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2.5 rounded-xl bg-cyber-purple/10 text-cyber-purple">
+                                <i data-lucide="cpu" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xs font-bold text-white font-orbitron">Automação de Processos & APIs</h3>
+                                <p class="text-[11px] text-slate-400">Eficiência e integração de sistemas</p>
+                            </div>
+                        </div>
+                        <i id="icon-service3" data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transition-transform duration-300"></i>
+                    </div>
+                    <div id="service3" class="hidden pt-3 mt-3 border-t border-cyber-border text-xs text-slate-300 leading-relaxed space-y-2">
+                        <p>Eliminação de tarefas manuais repetitivas através da tecnologia:</p>
+                        <ul class="list-disc list-inside text-slate-400 space-y-1 pl-1">
+                            <li>Conectores entre diferentes plataformas via REST APIs</li>
+                            <li>Automações no WhatsApp e e-mail corporativo</li>
+                            <li>Scripts de otimização em nuvem</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: DESTAQUE BLUE ENTERPRISE ECOSYSTEM -->
+        <section class="hud-card p-6 rounded-2xl relative overflow-hidden border-cyber-neon/50 space-y-4">
+            <div class="scanline absolute top-0 left-0"></div>
+            
+            <div class="flex items-center gap-3">
+                <div class="p-3 rounded-xl bg-cyber-blue/20 border border-cyber-neon/50 text-cyber-neon">
+                    <i data-lucide="shield-check" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <span class="text-[9px] font-mono font-bold text-cyber-neon tracking-widest uppercase">EMPRESA & ECOSSISTEMA</span>
+                    <h2 class="text-xl font-black text-white font-orbitron">Blue Enterprise</h2>
+                </div>
+            </div>
+
+            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                A <strong>Blue Enterprise</strong> é uma iniciativa focada na prestação de serviços de TI de ponta, inteligência de dados e desenvolvimento de software corporativo de alto valor agregado.
+            </p>
+
+            <div class="grid grid-cols-2 gap-2 text-center text-xs font-mono pt-1">
+                <div class="p-2 rounded-lg bg-cyber-dark border border-cyber-border">
+                    <span class="text-cyber-neon font-bold block">100%</span>
+                    <span class="text-[10px] text-slate-400">Foco em Performance</span>
+                </div>
+                <div class="p-2 rounded-lg bg-cyber-dark border border-cyber-border">
+                    <span class="text-cyber-blue font-bold block">CLOUD</span>
+                    <span class="text-[10px] text-slate-400">Arquitetura Escalável</span>
+                </div>
+            </div>
+
+            <a href="https://pagea.uk/blueenterprise" target="_blank" rel="noopener noreferrer"
+               class="flex items-center justify-between w-full p-3.5 rounded-xl bg-gradient-to-r from-cyber-blue to-cyber-neon text-black font-extrabold text-xs transition-all duration-300 group shadow-lg shadow-cyber-blue/20">
+                <span>Visitar Portal da Blue Enterprise</span>
+                <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+            </a>
+        </section>
+
+        <!-- SECTION 4: SOBRE MIGUEL (TRAJETÓRIA & EXPERIÊNCIA) -->
+        <section id="about" class="hud-card p-6 rounded-2xl space-y-4">
+            <h2 class="text-xs font-extrabold text-white font-orbitron flex items-center gap-2 tracking-wider">
+                <i data-lucide="user-check" class="w-4 h-4 text-cyber-neon"></i> SOBRE MIGUEL
+            </h2>
+
+            <div class="text-xs text-slate-300 leading-relaxed space-y-3">
+                <p>
+                    Olá! Sou <strong>Deividi Miguel da Costa (Miguel)</strong>, desenvolvedor Full Stack e profissional de Tecnologia da Informação apaixonado pela criação de soluções digitais modernas, eficientes e escaláveis.
+                </p>
+                <p>
+                    Atuo no planejamento, desenvolvimento e implementação de plataformas web, soluções em nuvem e inteligência de dados com Power BI. Como idealizador da <strong>Blue Enterprise</strong>, busco conectar tecnologia de ponta aos objetivos de negócios reais.
+                </p>
+            </div>
+
+            <!-- Badges de Tecnologia -->
+            <div class="flex flex-wrap gap-1.5 pt-2">
+                <span class="px-2.5 py-1 rounded-md bg-cyber-dark border border-cyber-border text-[10px] font-mono text-cyber-neon">HTML5/CSS3</span>
+                <span class="px-2.5 py-1 rounded-md bg-cyber-dark border border-cyber-border text-[10px] font-mono text-cyber-neon">JavaScript (ES6+)</span>
+                <span class="px-2.5 py-1 rounded-md bg-cyber-dark border border-cyber-border text-[10px] font-mono text-cyber-blue">Tailwind CSS</span>
+                <span class="px-2.5 py-1 rounded-md bg-cyber-dark border border-cyber-border text-[10px] font-mono text-cyber-blue">Power BI & DAX</span>
+                <span class="px-2.5 py-1 rounded-md bg-cyber-dark border border-cyber-border text-[10px] font-mono text-purple-400">AWS Cloud</span>
+                <span class="px-2.5 py-1 rounded-md bg-cyber-dark border border-cyber-border text-[10px] font-mono text-emerald-400">Python</span>
+            </div>
+        </section>
+
+        <!-- FOOTER / TERMINAL STATUS -->
+        <footer class="hud-card p-4 rounded-2xl space-y-3 border-t-2 border-t-cyber-neon text-center font-mono">
+            <div class="flex items-center justify-between text-[10px] text-slate-400 border-b border-cyber-border pb-2">
+                <span class="text-cyber-neon flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-cyber-neon animate-ping"></span> SYS_STATUS: ONLINE
+                </span>
+                <span id="realtimeClock" class="text-cyber-neon font-bold">12:00:00</span>
+            </div>
+            <p class="text-[11px] text-slate-300">
+                &copy; 2026 <strong>Miguel (Blue Enterprise)</strong>. Todos os direitos reservados.
+            </p>
+        </footer>
+
+    </div>
+
+    <!-- MODAL POPUP PARA INFORMAÇÕES EXPANSÍVEIS -->
+    <div id="infoModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="hud-card p-6 rounded-2xl max-w-sm w-full space-y-4 border-cyber-neon">
+            <div class="flex justify-between items-center border-b border-cyber-border pb-3">
+                <h3 id="modalTitle" class="text-sm font-bold text-white font-orbitron"></h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-white">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <p id="modalDescription" class="text-xs text-slate-300 leading-relaxed"></p>
+            <button onclick="closeModal()" class="w-full py-2.5 rounded-xl bg-cyber-neon text-black font-bold text-xs hover:bg-cyber-blue hover:text-white transition-all">
+                Entendido
+            </button>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 px-4 py-2.5 rounded-xl bg-cyber-neon text-black font-bold text-xs shadow-2xl transition-all duration-300 opacity-0 pointer-events-none flex items-center gap-2 z-50">
+        <i data-lucide="check-circle-2" class="w-4 h-4"></i> Link copiado para a área de transferência!
+    </div>
+
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Realtime Clock Function
+        function updateClock() {
+            const clockEl = document.getElementById('realtimeClock');
+            if(clockEl) {
+                const now = new Date();
+                clockEl.innerText = now.toLocaleTimeString('pt-BR');
+            }
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Preview and save user chosen photo
+        function previewUserPhoto(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.getElementById('userPhoto');
+                    const vector = document.getElementById('vectorAvatar');
+                    img.src = e.target.result;
+                    img.classList.remove('hidden');
+                    vector.classList.add('hidden');
+                    // Save locally for persistence
+                    try { localStorage.setItem('miguel_profile_pic', e.target.result); } catch(err){}
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Auto load saved photo if present
+        window.addEventListener('DOMContentLoaded', () => {
+            try {
+                const savedPhoto = localStorage.getItem('miguel_profile_pic');
+                if (savedPhoto) {
+                    const img = document.getElementById('userPhoto');
+                    const vector = document.getElementById('vectorAvatar');
+                    img.src = savedPhoto;
+                    img.classList.remove('hidden');
+                    vector.classList.add('hidden');
+                }
+            } catch(e) {}
+        });
+
+        // Toggle Expandable Cards
+        function toggleCard(id) {
+            const content = document.getElementById(id);
+            const icon = document.getElementById('icon-' + id);
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                if (icon) icon.style.transform = 'rotate(180deg)';
+            } else {
+                content.classList.add('hidden');
+                if (icon) icon.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        // Copy Link to Clipboard
+        function copyBioLink() {
+            const dummy = document.createElement('input');
+            document.body.appendChild(dummy);
+            dummy.value = window.location.href;
+            dummy.select();
+            document.execCommand('copy');
+            document.body.removeChild(dummy);
+
+            const toast = document.getElementById('toast');
+            toast.classList.remove('opacity-0', 'pointer-events-none');
+            toast.classList.add('opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('opacity-100');
+                toast.classList.add('opacity-0', 'pointer-events-none');
+            }, 2500);
+        }
+
+        // Open Modal
+        function openModal(title, text) {
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalDescription').innerText = text;
+            const modal = document.getElementById('infoModal');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modal.classList.add('opacity-100');
+        }
+
+        // Close Modal
+        function closeModal() {
+            const modal = document.getElementById('infoModal');
+            modal.classList.remove('opacity-100');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+        }
+    </script>
+</body>
+</html>
